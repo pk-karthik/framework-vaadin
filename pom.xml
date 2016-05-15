@@ -55,6 +55,12 @@
 			<url>http://maven.vaadin.com/vaadin-prereleases</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<repositories>
+		<repository>
+			<id>atm-js-staging</id>
+			<url>https://oss.sonatype.org/content/repositories/comvaadin-1718/</url>
+		</repository>
+	</repositories>
 
 	<organization>
 		<name>Vaadin Ltd</name>
