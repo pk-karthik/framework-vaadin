@@ -23,6 +23,9 @@ import java.util.List;
 import com.vaadin.v7.data.Container.Filter;
 import com.vaadin.v7.data.util.sqlcontainer.RowItem;
 
+/**
+ * @deprecated As of 8.0, no replacement available.
+ */
 @Deprecated
 public interface FreeformQueryDelegate extends Serializable {
     /**
@@ -32,8 +35,8 @@ public interface FreeformQueryDelegate extends Serializable {
      *
      * @param offset
      *            the first record (row) to fetch.
-     * @param pagelength
-     *            the number of records (rows) to fetch. 0 means all records
+     * @param limit
+     *            the limit of records (rows) to fetch. 0 means all records
      *            starting from offset.
      * @deprecated As of 6.7. Implement {@link FreeformStatementDelegate}
      *             instead of {@link FreeformQueryDelegate}

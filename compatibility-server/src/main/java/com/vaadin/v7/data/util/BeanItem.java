@@ -16,6 +16,7 @@
 
 package com.vaadin.v7.data.util;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.data.Binder;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.util.BeanUtil;
 import com.vaadin.v7.data.Property;
 
@@ -34,6 +37,10 @@ import com.vaadin.v7.data.Property;
  *
  * @author Vaadin Ltd.
  * @since 3.0
+ *
+ * @deprecated As of 8.0, no direct replacement available. You can use any bean directly as an item for {@link Binder}
+ * or {@link DataProvider} and access the item properties with lambdas like {@code binder.forField(component).bind(...)} or
+ * {@code new Grid<Bean>(dataProvider).addColumn(bean->bean.getSomething())}.
  */
 @SuppressWarnings("serial")
 @Deprecated
@@ -206,7 +213,7 @@ public class BeanItem<BT> extends PropertysetItem {
                     pdMap.put(pd.getName(), vaadinPropertyDescriptor);
                 }
             }
-        } catch (final java.beans.IntrospectionException ignored) {
+        } catch (final IntrospectionException ignored) {
         }
 
         return pdMap;

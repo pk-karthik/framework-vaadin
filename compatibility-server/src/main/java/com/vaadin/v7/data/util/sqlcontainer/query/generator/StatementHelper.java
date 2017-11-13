@@ -36,6 +36,8 @@ import java.util.Map;
  *
  * This class will also fill the values with correct setters into the
  * PreparedStatement on request.
+ *
+ * @deprecated As of 8.0, no replacement available.
  */
 @Deprecated
 public class StatementHelper implements Serializable {
@@ -62,7 +64,7 @@ public class StatementHelper implements Serializable {
             dataTypes.put(parameters.size() - 1, parameter.getClass());
         } else {
             throw new IllegalArgumentException(
-                    "You cannot add null parameters using addParamaters(Object). "
+                    "You cannot add null parameters using addParameters(Object). "
                             + "Use addParameters(Object,Class) instead");
         }
     }

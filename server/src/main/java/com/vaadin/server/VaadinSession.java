@@ -42,7 +42,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.portlet.PortletSession;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -56,8 +55,9 @@ import com.vaadin.util.ReflectTools;
 
 /**
  * Contains everything that Vaadin needs to store for a specific user. This is
- * typically stored in a {@link HttpSession} or {@link PortletSession}, but
- * others storage mechanisms might also be used.
+ * typically stored in a javax.servlet.http.HttpSession or
+ * javax.portlet.PortletSession, but others storage mechanisms might also be
+ * used.
  * <p>
  * Everything inside a {@link VaadinSession} should be serializable to ensure
  * compatibility with schemes using serialization for persisting the session
@@ -83,7 +83,7 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
         private final Runnable runnable;
 
         /**
-         * Creates an instance for the given runnable
+         * Creates an instance for the given runnable.
          *
          * @param session
          *            the session to which the task belongs
@@ -439,7 +439,7 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
 
     /**
      * Retrieves all {@link VaadinSession}s which are stored in the given HTTP
-     * session
+     * session.
      *
      * @since 7.2
      * @param httpSession
@@ -522,7 +522,7 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
     }
 
     /**
-     * Gets the configuration for this session
+     * Gets the configuration for this session.
      *
      * @return the deployment configuration
      */
@@ -678,8 +678,8 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
     /**
      * Gets the currently used session. The current session is automatically
      * defined when processing requests related to the session (see
-     * {@link ThreadLocal}) and in {@link VaadinSession#access(Command)} and
-     * {@link UI#access(Command)}. In other cases, (e.g. from background
+     * {@link ThreadLocal}) and in {@link VaadinSession#access(Runnable)} and
+     * {@link UI#access(Runnable)}. In other cases, (e.g. from background
      * threads, the current session is not automatically defined.
      * <p>
      * The session is stored using a weak reference to avoid leaking memory in
@@ -744,6 +744,8 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
      */
     private final String csrfToken = UUID.randomUUID().toString();
 
+    private final String pushId = UUID.randomUUID().toString();
+
     /**
      * Generate an id for the given Connector. Connectors must not call this
      * method more than once, the first time they need an id.
@@ -752,11 +754,25 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
      *            A connector that has not yet been assigned an id.
      * @return A new id for the connector
      *
-     * @deprecated As of 7.0. Will likely change or be removed in a future
-     *             version
+     * @deprecated As of 7.0. Use
+     *             {@link VaadinService#generateConnectorId(VaadinSession, ClientConnector)}
+     *             instead.
      */
     @Deprecated
     public String createConnectorId(ClientConnector connector) {
+        return service.generateConnectorId(this, connector);
+    }
+
+    /**
+     * Gets the next unused numerical id for connector ids.
+     *
+     * @since 8.1
+     *
+     * @return the next unused numerical id for connector ids, not
+     *         <code>null</code>
+     *
+     */
+    public String getNextConnectorId() {
         assert hasLock();
         return String.valueOf(connectorIdSequence++);
     }
@@ -777,7 +793,7 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
     }
 
     /**
-     * Checks if the current thread has exclusive access to this VaadinSession
+     * Checks if the current thread has exclusive access to this VaadinSession.
      *
      * @return true if the thread has exclusive access, false otherwise
      * @since 7.1
@@ -893,9 +909,9 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
      *
      * @param createOnDemand
      *            <code>true</code> if a resource handler should be initialized
-     *            if there is no handler associated with this application.
-     *            </code>false</code> if </code>null</code> should be returned
-     *            if there is no registered handler.
+     *            if there is no handler associated with this application,
+     *            <code>false</code> if <code>null</code> should be returned if
+     *            there is no registered handler.
      * @return this session's global resource handler, or <code>null</code> if
      *         there is no handler and the createOnDemand parameter is
      *         <code>false</code>.
@@ -1010,6 +1026,14 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
                         } finally {
                             CurrentInstance.restoreInstances(oldCurrent);
                         }
+                    }
+                    try {
+                        ui.getConnectorTracker().cleanConnectorMap(false);
+                    } catch (AssertionError | Exception e) {
+                        getLogger().log(Level.SEVERE,
+                                "Exception while cleaning connector map for ui "
+                                        + ui.getUIId(),
+                                e);
                     }
                 }
             }
@@ -1415,6 +1439,19 @@ public class VaadinSession implements HttpSessionBindingListener, Serializable {
     public String getCsrfToken() {
         assert hasLock();
         return csrfToken;
+    }
+
+    /**
+     * Gets the push connection identifier for this session. Used when
+     * establishing a push connection with the client.
+     *
+     * @return the push connection identifier string
+     *
+     * @since 8.0.6
+     */
+    public String getPushId() {
+        assert hasLock();
+        return pushId;
     }
 
     /**

@@ -17,6 +17,10 @@ package com.vaadin.shared.ui.tabsheet;
 
 import java.io.Serializable;
 
+import com.vaadin.shared.ui.ContentMode;
+
+import com.vaadin.shared.ui.ErrorLevel;
+
 /**
  * Shared state of a single tab in a Tabsheet or an Accordion.
  *
@@ -30,9 +34,17 @@ public class TabState implements Serializable {
     public boolean visible = true;
     public boolean closable = false;
     public String description = null;
+    public ContentMode descriptionContentMode = ContentMode.PREFORMATTED;
     public String styleName;
     public String key;
     public String componentError;
+
+    /**
+     * Represents the level of error on a tab.
+     *
+     * @since 8.2
+     */
+    public ErrorLevel componentErrorLevel;
     public String id;
     public String iconAltText;
 

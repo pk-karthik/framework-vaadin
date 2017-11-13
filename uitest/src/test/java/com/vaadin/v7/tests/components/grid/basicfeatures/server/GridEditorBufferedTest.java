@@ -64,6 +64,28 @@ public class GridEditorBufferedTest extends GridEditorTest {
     }
 
     @Test
+    public void testKeyboardSaveWithHiddenColumn() {
+        selectMenuPath("Component", "Columns", "Column 0", "Hidden");
+        selectMenuPath(EDIT_ITEM_100);
+
+        WebElement textField = getEditorWidgets().get(1);
+
+        textField.click();
+        // without this, the click in the middle of the field might not be after
+        // the old text on some browsers
+        new Actions(getDriver()).sendKeys(Keys.END).perform();
+
+        textField.sendKeys(" changed");
+
+        // Save from keyboard
+        new Actions(getDriver()).sendKeys(Keys.ENTER).perform();
+
+        assertEditorClosed();
+        assertEquals("(100, 2) changed",
+                getGridElement().getCell(100, 1).getText());
+    }
+
+    @Test
     public void testKeyboardSaveWithInvalidEdition() {
         makeInvalidEdition();
 
@@ -152,7 +174,7 @@ public class GridEditorBufferedTest extends GridEditorTest {
     private void makeInvalidEdition() {
         selectMenuPath(EDIT_ITEM_5);
         assertFalse(logContainsText(
-                "Exception occured, java.lang.IllegalStateException"));
+                "Exception occurred, java.lang.IllegalStateException"));
 
         GridEditorElement editor = getGridElement().getEditor();
 
@@ -294,7 +316,7 @@ public class GridEditorBufferedTest extends GridEditorTest {
 
         selectMenuPath(EDIT_ITEM_100);
         boolean thrown = logContainsText(
-                "Exception occured, java.lang.IllegalStateException");
+                "Exception occurred, java.lang.IllegalStateException");
         assertTrue("IllegalStateException thrown", thrown);
 
         assertEditorOpen();

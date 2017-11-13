@@ -24,6 +24,8 @@ import java.util.Arrays;
  * The data structure of a RowId is an Object array which contains the values of
  * the primary key columns of the identified row. This allows easy equals()
  * -comparison of RowItems.
+ *
+ *  @deprecated As of 8.0, no replacement available.
  */
 @Deprecated
 public class RowId implements Serializable {
@@ -71,7 +73,7 @@ public class RowId implements Serializable {
             builder.append(id);
             builder.append('/');
         }
-        if (builder.length() > 0) {
+        if (builder.length() != 0) {
             return builder.substring(0, builder.length() - 1);
         }
         return builder.toString();

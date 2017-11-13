@@ -29,12 +29,12 @@ import org.jsoup.parser.Tag;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.server.ErrorMessage.ErrorLevel;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.UserError;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.tests.design.DeclarativeTestBase;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Label;
@@ -44,7 +44,6 @@ import com.vaadin.ui.declarative.DesignContext;
 /**
  * Test cases for reading and writing the properties of AbstractComponent.
  *
- * @since
  * @author Vaadin Ltd
  */
 public class AbstractLegacyComponentDeclarativeTest

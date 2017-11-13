@@ -28,6 +28,7 @@ import java.util.EventObject;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,9 @@ import com.vaadin.v7.data.util.sqlcontainer.query.generator.MSSQLGenerator;
 import com.vaadin.v7.data.util.sqlcontainer.query.generator.SQLGenerator;
 import com.vaadin.v7.data.util.sqlcontainer.query.generator.StatementHelper;
 
+/**
+ * @deprecated As of 8.0, no replacement available.
+ */
 @SuppressWarnings("serial")
 @Deprecated
 public class TableQuery extends AbstractTransactionalQuery
@@ -436,10 +440,10 @@ public class TableQuery extends AbstractTransactionalQuery
         if (fullTableName == null) {
             StringBuilder sb = new StringBuilder();
             if (catalogName != null) {
-                sb.append(catalogName).append(".");
+                sb.append(catalogName).append('.');
             }
             if (schemaName != null) {
-                sb.append(schemaName).append(".");
+                sb.append(schemaName).append('.');
             }
             sb.append(tableName);
             fullTableName = sb.toString();
@@ -556,11 +560,13 @@ public class TableQuery extends AbstractTransactionalQuery
                         null);
                 if (!tables.next()) {
                     String catalog = (catalogName != null)
-                            ? catalogName.toUpperCase() : null;
+                            ? catalogName.toUpperCase(Locale.ROOT)
+                            : null;
                     String schema = (schemaName != null)
-                            ? schemaName.toUpperCase() : null;
+                            ? schemaName.toUpperCase(Locale.ROOT)
+                            : null;
                     tables = dbmd.getTables(catalog, schema,
-                            tableName.toUpperCase(), null);
+                            tableName.toUpperCase(Locale.ROOT), null);
                     if (!tables.next()) {
                         throw new IllegalArgumentException(
                                 "Table with the name \"" + getFullTableName()
@@ -568,7 +574,7 @@ public class TableQuery extends AbstractTransactionalQuery
                     } else {
                         catalogName = catalog;
                         schemaName = schema;
-                        tableName = tableName.toUpperCase();
+                        tableName = tableName.toUpperCase(Locale.ROOT);
                     }
                 }
                 tables.close();
@@ -677,7 +683,7 @@ public class TableQuery extends AbstractTransactionalQuery
 
     @Override
     public boolean containsRowWithKey(Object... keys) throws SQLException {
-        ArrayList<Filter> filtersAndKeys = new ArrayList<Filter>();
+        List<Filter> filtersAndKeys = new ArrayList<Filter>();
         if (filters != null) {
             filtersAndKeys.addAll(filters);
         }
@@ -752,7 +758,7 @@ public class TableQuery extends AbstractTransactionalQuery
     }
 
     /**
-     * Adds RowIdChangeListener to this query
+     * Adds RowIdChangeListener to this query.
      */
     @Override
     public void addRowIdChangeListener(RowIdChangeListener listener) {
@@ -765,7 +771,7 @@ public class TableQuery extends AbstractTransactionalQuery
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addRowIdChangeListener(QueryDelegate.RowIdChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void addListener(RowIdChangeListener listener) {
@@ -773,7 +779,7 @@ public class TableQuery extends AbstractTransactionalQuery
     }
 
     /**
-     * Removes the given RowIdChangeListener from this query
+     * Removes the given RowIdChangeListener from this query.
      */
     @Override
     public void removeRowIdChangeListener(RowIdChangeListener listener) {
@@ -785,7 +791,7 @@ public class TableQuery extends AbstractTransactionalQuery
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #removeRowIdChangeListener(QueryDelegate.RowIdChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void removeListener(RowIdChangeListener listener) {

@@ -15,12 +15,12 @@
  */
 package com.vaadin.v7.data.util;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.LinkedList;
 
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.v7.data.Container;
 
 /**
@@ -36,6 +36,8 @@ import com.vaadin.v7.data.Container;
  * make them public.
  *
  * @since 6.6
+ *
+ * @deprecated As of 8.0, replaced by {@link DataProvider}
  */
 @Deprecated
 public abstract class AbstractContainer implements Container {
@@ -60,7 +62,7 @@ public abstract class AbstractContainer implements Container {
      */
     @Deprecated
     protected static class BasePropertySetChangeEvent extends EventObject
-            implements Container.PropertySetChangeEvent, Serializable {
+            implements Container.PropertySetChangeEvent {
 
         protected BasePropertySetChangeEvent(Container source) {
             super(source);
@@ -82,7 +84,7 @@ public abstract class AbstractContainer implements Container {
      */
     @Deprecated
     protected static class BaseItemSetChangeEvent extends EventObject
-            implements Container.ItemSetChangeEvent, Serializable {
+            implements Container.ItemSetChangeEvent {
 
         protected BaseItemSetChangeEvent(Container source) {
             super(source);
@@ -115,7 +117,7 @@ public abstract class AbstractContainer implements Container {
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addPropertySetChangeListener(Container.PropertySetChangeListener)}
-     **/
+     */
     @Deprecated
     protected void addListener(Container.PropertySetChangeListener listener) {
         addPropertySetChangeListener(listener);
@@ -139,7 +141,7 @@ public abstract class AbstractContainer implements Container {
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #removePropertySetChangeListener(Container.PropertySetChangeListener)}
-     **/
+     */
     @Deprecated
     protected void removeListener(
             Container.PropertySetChangeListener listener) {
@@ -167,7 +169,7 @@ public abstract class AbstractContainer implements Container {
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addItemSetChangeListener(Container.ItemSetChangeListener)}
-     **/
+     */
     @Deprecated
     protected void addListener(Container.ItemSetChangeListener listener) {
         addItemSetChangeListener(listener);
@@ -190,7 +192,7 @@ public abstract class AbstractContainer implements Container {
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addItemSetChangeListener(Container.ItemSetChangeListener)}
-     **/
+     */
     @Deprecated
     protected void removeListener(Container.ItemSetChangeListener listener) {
         removeItemSetChangeListener(listener);
@@ -217,9 +219,8 @@ public abstract class AbstractContainer implements Container {
     protected void fireContainerPropertySetChange(
             Container.PropertySetChangeEvent event) {
         if (getPropertySetChangeListeners() != null) {
-            final Object[] l = getPropertySetChangeListeners().toArray();
-            for (int i = 0; i < l.length; i++) {
-                ((Container.PropertySetChangeListener) l[i])
+            for (Object l : getPropertySetChangeListeners().toArray()) {
+                ((Container.PropertySetChangeListener) l)
                         .containerPropertySetChange(event);
             }
         }
@@ -243,9 +244,8 @@ public abstract class AbstractContainer implements Container {
      */
     protected void fireItemSetChange(ItemSetChangeEvent event) {
         if (getItemSetChangeListeners() != null) {
-            final Object[] l = getItemSetChangeListeners().toArray();
-            for (int i = 0; i < l.length; i++) {
-                ((Container.ItemSetChangeListener) l[i])
+            for (Object l : getItemSetChangeListeners().toArray()) {
+                ((Container.ItemSetChangeListener) l)
                         .containerItemSetChange(event);
             }
         }

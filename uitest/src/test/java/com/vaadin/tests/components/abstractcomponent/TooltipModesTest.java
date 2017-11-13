@@ -15,7 +15,8 @@
  */
 package com.vaadin.tests.components.abstractcomponent;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -36,7 +37,8 @@ public class TooltipModesTest extends TooltipTest {
         $(ButtonElement.class).first().showTooltip();
 
         // preformatted is default
-        checkTooltip("<pre>Several\n lines\n tooltip</pre>");
+        checkTooltip(
+                "<pre class=\"v-tooltip-pre\">Several\n lines\n tooltip</pre>");
 
         // Use html inside tooltip
         $(ButtonElement.class).get(1).click();
@@ -58,7 +60,6 @@ public class TooltipModesTest extends TooltipTest {
         WebElement tooltip = getTooltip();
         WebElement tooltipContent = tooltip
                 .findElement(By.className("v-tooltip-text"));
-        Assert.assertEquals(tooltipText,
-                tooltipContent.getAttribute("innerHTML"));
+        assertEquals(tooltipText, tooltipContent.getAttribute("innerHTML"));
     }
 }

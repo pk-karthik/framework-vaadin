@@ -15,12 +15,13 @@
  */
 package com.vaadin.tests.elements;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.testbench.elements.TreeElement;
 import com.vaadin.tests.tb3.MultiBrowserTest;
+import com.vaadin.v7.testbench.elements.TreeElement;
 
 public class TreeElementGetValueTest extends MultiBrowserTest {
     @Before
@@ -31,7 +32,6 @@ public class TreeElementGetValueTest extends MultiBrowserTest {
     @Test
     public void testGetValue() {
         TreeElement tree = $(TreeElement.class).get(0);
-        Assert.assertEquals(tree.getValue(),
-                TreeElementGetValue.TEST_VALUE_LVL2);
+        assertEquals(tree.getValue(), TreeElementGetValue.TEST_VALUE_LVL2);
     }
 }

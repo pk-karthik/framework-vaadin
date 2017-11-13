@@ -20,8 +20,10 @@ import com.vaadin.client.annotations.OnStateChange;
 import com.vaadin.client.connectors.AbstractRendererConnector;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.client.widgets.Grid.Column;
+import com.vaadin.client.widgets.Grid.HeaderCell;
 import com.vaadin.shared.data.DataCommunicatorConstants;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.grid.ColumnState;
 
 import elemental.json.JsonObject;
@@ -36,9 +38,11 @@ import elemental.json.JsonValue;
 @Connect(com.vaadin.ui.Grid.Column.class)
 public class ColumnConnector extends AbstractExtensionConnector {
 
-    static abstract class CustomColumn extends Column<Object, JsonObject> {
+    public abstract static class CustomColumn
+            extends Column<Object, JsonObject> {
 
         private final String connectorId;
+        private ContentMode contentMode;
 
         CustomColumn(String connectorId) {
             this.connectorId = connectorId;
@@ -46,6 +50,34 @@ public class ColumnConnector extends AbstractExtensionConnector {
 
         public String getConnectorId() {
             return connectorId;
+        }
+
+        @Override
+        protected void setDefaultHeaderContent(HeaderCell cell) {
+            // NO-OP, Server takes care of header contents.
+        }
+
+        /**
+         * Gets the content mode for tooltips in this column.
+         *
+         * @return the content mode.
+         *
+         * @since 8.2
+         */
+        public ContentMode getContentMode() {
+            return contentMode;
+        }
+
+        /**
+         * Sets the content mode for tooltips in this column.
+         *
+         * @param contentMode
+         *            the content mode for tooltips
+         *
+         * @since 8.2
+         */
+        public void setContentMode(ContentMode contentMode) {
+            this.contentMode = contentMode;
         }
     }
 
@@ -73,8 +105,12 @@ public class ColumnConnector extends AbstractExtensionConnector {
                 return null;
             }
         };
-        column.setRenderer(getRendererConnector().getRenderer());
+
+        // Initially set a renderer
+        updateRenderer();
+
         getParent().addColumn(column, getState().internalId);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -87,9 +123,20 @@ public class ColumnConnector extends AbstractExtensionConnector {
         column.setHeaderCaption(getState().caption);
     }
 
+    @OnStateChange("assistiveCaption")
+    void updateAssistiveCaption() {
+        column.setAssistiveCaption(getState().assistiveCaption);
+    }
+
     @OnStateChange("sortable")
     void updateSortable() {
         column.setSortable(getState().sortable);
+    }
+
+    @OnStateChange("renderer")
+    void updateRenderer() {
+        column.setRenderer(getRendererConnector().getRenderer());
+        getParent().onColumnRendererChanged(column);
     }
 
     @OnStateChange("hidingToggleCaption")
@@ -122,6 +169,11 @@ public class ColumnConnector extends AbstractExtensionConnector {
         column.setMinimumWidth(getState().minWidth);
     }
 
+    @OnStateChange("minimumWidthFromContent")
+    void updateMinimumWidthFromContent() {
+        column.setMinimumWidthFromContent(getState().minimumWidthFromContent);
+    }
+
     @OnStateChange("maxWidth")
     void updateMaxWidth() {
         column.setMaximumWidth(getState().maxWidth);
@@ -137,6 +189,11 @@ public class ColumnConnector extends AbstractExtensionConnector {
         column.setEditable(getState().editable);
     }
 
+    @OnStateChange("contentMode")
+    void updateContentMode() {
+        column.setContentMode(getState().contentMode);
+    }
+
     @Override
     public void onUnregister() {
         super.onUnregister();
@@ -145,6 +202,7 @@ public class ColumnConnector extends AbstractExtensionConnector {
             // time to remove columns (and have problems with frozen columns)
             // before throwing everything away
             parent.removeColumn(column);
+            parent = null;
         }
         column = null;
     }
@@ -158,5 +216,4 @@ public class ColumnConnector extends AbstractExtensionConnector {
     public ColumnState getState() {
         return (ColumnState) super.getState();
     }
-
 }

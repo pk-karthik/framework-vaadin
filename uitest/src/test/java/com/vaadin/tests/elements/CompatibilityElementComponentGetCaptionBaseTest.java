@@ -15,7 +15,8 @@
  */
 package com.vaadin.tests.elements;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,10 +31,10 @@ import com.vaadin.testbench.elements.OptionGroupElement;
 import com.vaadin.testbench.elements.TableElement;
 import com.vaadin.testbench.elements.TextAreaElement;
 import com.vaadin.testbench.elements.TextFieldElement;
-import com.vaadin.testbench.elements.TreeElement;
 import com.vaadin.testbench.elements.TreeTableElement;
 import com.vaadin.testbench.elements.TwinColSelectElement;
 import com.vaadin.tests.tb3.MultiBrowserTest;
+import com.vaadin.v7.testbench.elements.TreeElement;
 
 /**
  *
@@ -128,7 +129,7 @@ public abstract class CompatibilityElementComponentGetCaptionBaseTest
     private void testCaption(AbstractComponentElement elem, int caption_index) {
         String actual = elem.getCaption();
         String expected = CompatibilityElementComponentGetCaptionBase.DEFAULT_CAPTIONS[caption_index];
-        Assert.assertTrue("Error with class:" + elem.getAttribute("class"),
+        assertTrue("Error with class:" + elem.getAttribute("class"),
                 expected.equals(actual));
     }
 

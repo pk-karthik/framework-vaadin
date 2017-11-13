@@ -24,11 +24,11 @@ import com.vaadin.testbench.elementsbase.ServerClass;
 public class AbstractFieldElement extends AbstractComponentElement {
 
     /**
-     * Select contents of TextField Element
+     * Select contents of TextField Element.
      *
      * NOTE: When testing with firefox browser window should have focus in it
      *
-     * @since
+     * @since 8.0
      * @param elem
      *            element which context will be select
      */

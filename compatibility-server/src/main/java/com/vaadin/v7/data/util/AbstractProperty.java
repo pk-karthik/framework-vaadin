@@ -18,8 +18,10 @@ package com.vaadin.v7.data.util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.logging.Logger;
 
+import com.vaadin.data.Binder;
+import com.vaadin.data.ValueProvider;
+import com.vaadin.server.Setter;
 import com.vaadin.v7.data.Property;
 
 /**
@@ -29,6 +31,9 @@ import com.vaadin.v7.data.Property;
  * {@link ReadOnlyStatusChangeListener}s.
  *
  * @since 6.6
+ *
+ * @deprecated As of 8.0, replaced by {@link ValueProvider}, {@link Setter}, see
+ *             {@link Binder}
  */
 @Deprecated
 public abstract class AbstractProperty<T> implements Property<T>,
@@ -123,7 +128,7 @@ public abstract class AbstractProperty<T> implements Property<T>,
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addReadOnlyStatusChangeListener(Property.ReadOnlyStatusChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void addListener(Property.ReadOnlyStatusChangeListener listener) {
@@ -147,7 +152,7 @@ public abstract class AbstractProperty<T> implements Property<T>,
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #removeReadOnlyStatusChangeListener(Property.ReadOnlyStatusChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void removeListener(Property.ReadOnlyStatusChangeListener listener) {
@@ -159,11 +164,10 @@ public abstract class AbstractProperty<T> implements Property<T>,
      */
     protected void fireReadOnlyStatusChange() {
         if (readOnlyStatusChangeListeners != null) {
-            final Object[] l = readOnlyStatusChangeListeners.toArray();
             final Property.ReadOnlyStatusChangeEvent event = new ReadOnlyStatusChangeEvent(
                     this);
-            for (int i = 0; i < l.length; i++) {
-                ((Property.ReadOnlyStatusChangeListener) l[i])
+            for (Object l : readOnlyStatusChangeListeners.toArray()) {
+                ((Property.ReadOnlyStatusChangeListener) l)
                         .readOnlyStatusChange(event);
             }
         }
@@ -210,7 +214,7 @@ public abstract class AbstractProperty<T> implements Property<T>,
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #addValueChangeListener(Property.ValueChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void addListener(ValueChangeListener listener) {
@@ -228,7 +232,7 @@ public abstract class AbstractProperty<T> implements Property<T>,
     /**
      * @deprecated As of 7.0, replaced by
      *             {@link #removeValueChangeListener(Property.ValueChangeListener)}
-     **/
+     */
     @Override
     @Deprecated
     public void removeListener(ValueChangeListener listener) {
@@ -240,10 +244,9 @@ public abstract class AbstractProperty<T> implements Property<T>,
      */
     protected void fireValueChange() {
         if (valueChangeListeners != null) {
-            final Object[] l = valueChangeListeners.toArray();
             final Property.ValueChangeEvent event = new ValueChangeEvent(this);
-            for (int i = 0; i < l.length; i++) {
-                ((Property.ValueChangeListener) l[i]).valueChange(event);
+            for (Object l : valueChangeListeners.toArray()) {
+                ((Property.ValueChangeListener) l).valueChange(event);
             }
         }
     }
@@ -266,9 +269,5 @@ public abstract class AbstractProperty<T> implements Property<T>,
         }
 
         return Collections.EMPTY_LIST;
-    }
-
-    private static Logger getLogger() {
-        return Logger.getLogger(AbstractProperty.class.getName());
     }
 }

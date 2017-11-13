@@ -16,8 +16,16 @@
 package com.vaadin.client.ui.dd;
 
 import com.vaadin.client.UIDL;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
-final public class VOverTreeNode extends VAcceptCriterion {
+/**
+ *
+ * @author Vaadin Ltd
+ * @deprecated Since 8.1, no direct replacement, see {@link DropTargetExtension}
+ *             and extending classes
+ */
+@Deprecated
+public final class VOverTreeNode extends VAcceptCriterion {
 
     @Override
     protected boolean accept(VDragEvent drag, UIDL configuration) {

@@ -53,9 +53,8 @@ public class Panel extends AbstractSingleComponentContainer
      */
     protected ActionManager actionManager;
 
-    private PanelServerRpc rpc = (MouseEventDetails mouseDetails) -> {
-        fireEvent(new ClickEvent(Panel.this, mouseDetails));
-    };
+    private PanelServerRpc rpc = (MouseEventDetails mouseDetails) -> fireEvent(
+            new ClickEvent(Panel.this, mouseDetails));
 
     /**
      * Creates a new empty panel.
@@ -100,15 +99,6 @@ public class Panel extends AbstractSingleComponentContainer
         setCaption(caption);
     }
 
-    /**
-     * Sets the caption of the panel.
-     *
-     * Note that the caption is interpreted as HTML and therefore care should be
-     * taken not to enable HTML injection and XSS attacks using panel captions.
-     * This behavior may change in future versions.
-     *
-     * @see AbstractComponent#setCaption(String)
-     */
     @Override
     public void setCaption(String caption) {
         super.setCaption(caption);
@@ -252,7 +242,7 @@ public class Panel extends AbstractSingleComponentContainer
     }
 
     /**
-     * Removes all action handlers
+     * Removes all action handlers.
      */
     public void removeAllActionHandlers() {
         if (actionManager != null) {

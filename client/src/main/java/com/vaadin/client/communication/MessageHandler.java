@@ -31,7 +31,6 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
@@ -134,6 +133,9 @@ public class MessageHandler {
     // will hold the CSRF token once received
     private String csrfToken = ApplicationConstants.CSRF_TOKEN_DEFAULT_VALUE;
 
+    // holds the push identifier once received
+    private String pushId = null;
+
     /** Timer for automatic redirect to SessionExpiredURL */
     private Timer redirectTimer;
 
@@ -141,7 +143,7 @@ public class MessageHandler {
     private int sessionExpirationInterval;
 
     /**
-     * Holds the time spent rendering the last request
+     * Holds the time spent rendering the last request.
      */
     protected int lastProcessingTime;
 
@@ -226,7 +228,7 @@ public class MessageHandler {
      * Handles a received UIDL JSON text, parsing it, and passing it on to the
      * appropriate handlers, while logging timing information.
      *
-     * @param jsonText
+     * @param json
      *            The JSON to handle
      */
     public void handleMessage(final ValueMap json) {
@@ -245,12 +247,7 @@ public class MessageHandler {
                 .getApplicationState() == ApplicationState.INITIALIZING) {
             // Application is starting up for the first time
             connection.setApplicationRunning(true);
-            connection.executeWhenCSSLoaded(new Command() {
-                @Override
-                public void execute() {
-                    handleJSON(json);
-                }
-            });
+            connection.executeWhenCSSLoaded(() -> handleJSON(json));
         } else {
             getLogger().warning(
                     "Ignored received message because application has already been stopped");
@@ -350,6 +347,12 @@ public class MessageHandler {
             csrfToken = json
                     .getString(ApplicationConstants.UIDL_SECURITY_TOKEN_ID);
         }
+
+        // Get push id if present
+        if (json.containsKey(ApplicationConstants.UIDL_PUSH_ID)) {
+            pushId = json.getString(ApplicationConstants.UIDL_PUSH_ID);
+        }
+
         getLogger().info(" * Handling resources from server");
 
         if (json.containsKey("resources")) {
@@ -565,12 +568,9 @@ public class MessageHandler {
                 ConnectorBundleLoader.get().ensureDeferredBundleLoaded();
 
                 if (Profiler.isEnabled()) {
-                    Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            Profiler.logTimings();
-                            Profiler.reset();
-                        }
+                    Scheduler.get().scheduleDeferred(() -> {
+                        Profiler.logTimings();
+                        Profiler.reset();
                     });
                 }
             }
@@ -804,8 +804,8 @@ public class MessageHandler {
 
                 JsArrayString detachedArray = detachedConnectors.dump();
                 for (int i = 0; i < detachedArray.length(); i++) {
-                    ServerConnector connector = getConnectorMap().getConnector(
-                            detachedArray.get(i));
+                    ServerConnector connector = getConnectorMap()
+                            .getConnector(detachedArray.get(i));
 
                     Profiler.enter(
                             "unregisterRemovedConnectors unregisterConnector");
@@ -927,13 +927,13 @@ public class MessageHandler {
                                 Profiler.leave(key);
                             }
                         } else if (legacyConnector == null) {
-                            getLogger().severe(
-                                    "Received update for " + uidl.getTag()
-                                            + ", but there is no such paintable ("
-                                            + connectorId + ") rendered.");
+                            getLogger().severe("Received update for "
+                                    + uidl.getTag()
+                                    + ", but there is no such paintable ("
+                                    + connectorId + ") rendered.");
                         } else {
-                            getLogger()
-                                    .severe("Server sent Vaadin 6 style updates for "
+                            getLogger().severe(
+                                    "Server sent Vaadin 6 style updates for "
                                             + Util.getConnectorString(
                                                     legacyConnector)
                                             + " but this is not a Vaadin 6 Paintable");
@@ -1604,7 +1604,7 @@ public class MessageHandler {
         }
     }
 
-    private static native final int calculateBootstrapTime()
+    private static final native int calculateBootstrapTime()
     /*-{
         if ($wnd.performance && $wnd.performance.timing) {
             return (new Date).getTime() - $wnd.performance.timing.responseStart;
@@ -1688,6 +1688,18 @@ public class MessageHandler {
     }
 
     /**
+     * Gets the push connection identifier for this session. Used when
+     * establishing a push connection with the client.
+     *
+     * @return the push connection identifier string
+     *
+     * @since 8.0.6
+     */
+    public String getPushId() {
+        return pushId;
+    }
+
+    /**
      * Checks whether state changes are currently being processed. Certain
      * operations are not allowed when the internal state of the application
      * might be in an inconsistent state because some state changes have been
@@ -1702,7 +1714,7 @@ public class MessageHandler {
     }
 
     /**
-     * Checks if the first UIDL has been handled
+     * Checks if the first UIDL has been handled.
      *
      * @return true if the initial UIDL has already been processed, false
      *         otherwise
@@ -1756,7 +1768,7 @@ public class MessageHandler {
     }
 
     /**
-     * Unwraps and parses the given JSON, originating from the server
+     * Unwraps and parses the given JSON, originating from the server.
      *
      * @param jsonText
      *            the json from the server
@@ -1790,7 +1802,7 @@ public class MessageHandler {
     }-*/;
 
     /**
-     * Parse the given wrapped JSON, received from the server, to a ValueMap
+     * Parse the given wrapped JSON, received from the server, to a ValueMap.
      *
      * @param wrappedJsonText
      *            the json, wrapped as done by the server

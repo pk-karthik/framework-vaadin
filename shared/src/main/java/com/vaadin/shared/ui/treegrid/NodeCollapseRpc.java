@@ -20,12 +20,26 @@ import com.vaadin.shared.communication.ServerRpc;
 /**
  * RPC to handle client originated collapse and expand actions on hierarchical
  * rows in TreeGrid.
- * 
+ *
  * @author Vaadin Ltd
  * @since 8.1
  */
 @FunctionalInterface
 public interface NodeCollapseRpc extends ServerRpc {
 
-    void toggleCollapse(String rowKey);
+    /**
+     * Sets the collapse state of a hierarchical row in TreeGrid.
+     *
+     * @param rowKey
+     *            the row's key
+     * @param rowIndex
+     *            index where the row is in grid (all rows)
+     * @param collapse
+     *            {@code true} to collapse, {@code false} to expand
+     * @param userOriginated
+     *            {@code true} if this RPC was triggered by a user interaction,
+     *            {@code false} otherwise
+     */
+    void setNodeCollapsed(String rowKey, int rowIndex, boolean collapse,
+            boolean userOriginated);
 }

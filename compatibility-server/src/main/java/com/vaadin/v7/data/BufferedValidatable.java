@@ -16,7 +16,7 @@
 
 package com.vaadin.v7.data;
 
-import java.io.Serializable;
+import com.vaadin.data.Binder;
 
 /**
  * <p>
@@ -27,10 +27,11 @@ import java.io.Serializable;
  *
  * @author Vaadin Ltd.
  * @since 3.0
+ * @deprecated As of 8.0, no direct replacement available. See {@link Binder}, {@link com.vaadin.data.Validator}.
  */
 @Deprecated
 public interface BufferedValidatable
-        extends Buffered, Validatable, Serializable {
+        extends Buffered, Validatable {
 
     /**
      * Tests if the invalid data is committed to datasource. The default is

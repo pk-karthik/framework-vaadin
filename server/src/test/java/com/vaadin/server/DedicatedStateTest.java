@@ -15,15 +15,19 @@
  */
 package com.vaadin.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.tests.VaadinClasses;
+import com.vaadin.ui.Composite;
 import com.vaadin.ui.LegacyWindow;
 import com.vaadin.ui.components.colorpicker.ColorPickerHistory;
 import com.vaadin.ui.components.colorpicker.ColorPickerPopup;
@@ -47,7 +51,8 @@ public class DedicatedStateTest {
     }
 
     private void checkState(Class<?> clazz) {
-        if (WHITE_LIST.contains(clazz.getCanonicalName())) {
+        if (WHITE_LIST.contains(clazz.getCanonicalName())
+                || Composite.class.isAssignableFrom(clazz)) {
             return;
         }
         Method getStateNoArg = getStateNoArg(clazz);
@@ -56,7 +61,7 @@ public class DedicatedStateTest {
         Class<?> superclass = clazz.getSuperclass();
         if (!clazz.equals(AbstractClientConnector.class)
                 && !superclass.equals(AbstractExtension.class)) {
-            Assert.assertNotEquals(
+            assertNotEquals(
                     "Class " + clazz
                             + " has the same state type as its super class "
                             + clazz.getSuperclass(),
@@ -65,9 +70,9 @@ public class DedicatedStateTest {
         try {
             Method getStateOneArg = clazz.getDeclaredMethod("getState",
                     boolean.class);
-            Assert.assertEquals(stateType, getStateOneArg.getReturnType());
+            assertEquals(stateType, getStateOneArg.getReturnType());
         } catch (NoSuchMethodException e) {
-            Assert.fail("Class " + clazz
+            fail("Class " + clazz
                     + " doesn't have its own getState(boolean) method");
         } catch (SecurityException e) {
             throw new RuntimeException(e);
@@ -78,8 +83,7 @@ public class DedicatedStateTest {
         try {
             return clazz.getDeclaredMethod("getState");
         } catch (NoSuchMethodException e) {
-            Assert.fail("Class " + clazz
-                    + " doesn't have its own getState() method");
+            fail("Class " + clazz + " doesn't have its own getState() method");
             return null;
         } catch (SecurityException e) {
             throw new RuntimeException(e);

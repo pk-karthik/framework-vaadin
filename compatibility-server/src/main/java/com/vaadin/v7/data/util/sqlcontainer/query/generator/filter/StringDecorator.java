@@ -26,6 +26,8 @@ import java.io.Serializable;
  * (parenthesis).
  *
  * @author Vaadin Ltd
+ *
+ * @deprecated As of 8.0, no replacement available.
  */
 @Deprecated
 public class StringDecorator implements Serializable {
@@ -59,7 +61,7 @@ public class StringDecorator implements Serializable {
     }
 
     /**
-     * Groups a string by surrounding it in parenthesis
+     * Groups a string by surrounding it in parenthesis.
      *
      * @param str
      *            the string to group

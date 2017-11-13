@@ -19,18 +19,24 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * Wrapper for html5 File object.
+ *
+ * @author Vaadin Ltd
+ * @deprecated Since 8.1, will be replaced by FileDropTargetExtensionConnector
+ *             and FileDropTargetExtension,
+ *             https://github.com/vaadin/framework/issues/8891
  */
+@Deprecated
 public class VHtml5File extends JavaScriptObject {
 
     protected VHtml5File() {
     }
 
-    public native final String getName()
+    public final native String getName()
     /*-{
         return this.name;
      }-*/;
 
-    public native final String getType()
+    public final native String getType()
     /*-{
         return this.type;
      }-*/;
@@ -41,7 +47,7 @@ public class VHtml5File extends JavaScriptObject {
      * and then cast back to a long value.
      * www.gwtproject.org/doc/latest/DevGuideCodingBasicsJSNI.html#important
      */
-    public native final double getSize()
+    public final native double getSize()
     /*-{
         return this.size ? this.size : 0;
     }-*/;

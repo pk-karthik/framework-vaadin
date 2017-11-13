@@ -18,9 +18,20 @@ package com.vaadin.client.ui.dd;
 import com.vaadin.client.UIDL;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.shared.ui.dd.AcceptCriterion;
+import com.vaadin.ui.dnd.DragSourceExtension;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
+/**
+ *
+ * @author Vaadin Ltd
+ * @deprecated Replaced in 8.1 with
+ *             {@link DragSourceExtension#setEffectAllowed(com.vaadin.shared.ui.dnd.EffectAllowed)}
+ *             and
+ *             {@link DropTargetExtension#setDropEffect(com.vaadin.shared.ui.dnd.DropEffect)}
+ */
+@Deprecated
 @AcceptCriterion(AcceptAll.class)
-final public class VAcceptAll extends VAcceptCriterion {
+public final class VAcceptAll extends VAcceptCriterion {
 
     @Override
     protected boolean accept(VDragEvent drag, UIDL configuration) {

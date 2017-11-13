@@ -16,8 +16,6 @@
 package com.vaadin.v7.data.util;
 
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Property.ValueChangeEvent;
-import com.vaadin.v7.data.Property.ValueChangeNotifier;
 
 /**
  * Wrapper class that helps implement two-phase commit for a non-transactional
@@ -40,10 +38,13 @@ import com.vaadin.v7.data.Property.ValueChangeNotifier;
  * @since 7.0
  *
  * @param <T>
+ *
+ * @deprecated As of 8.0, no replacement available.
  */
+
 @Deprecated
 public class TransactionalPropertyWrapper<T> extends AbstractProperty<T>
-        implements ValueChangeNotifier, Property.Transactional<T> {
+        implements Property.Transactional<T> {
 
     private Property<T> wrappedProperty;
     private boolean inTransaction = false;

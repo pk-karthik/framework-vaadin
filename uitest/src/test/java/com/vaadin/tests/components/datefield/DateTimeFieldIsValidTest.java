@@ -15,13 +15,14 @@
  */
 package com.vaadin.tests.components.datefield;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import com.vaadin.testbench.By;
-import com.vaadin.testbench.customelements.AbstractDateFieldElement;
+import com.vaadin.testbench.elements.AbstractDateFieldElement;
 import com.vaadin.testbench.elements.ButtonElement;
 import com.vaadin.tests.tb3.MultiBrowserTest;
 
@@ -59,7 +60,7 @@ public class DateTimeFieldIsValidTest extends MultiBrowserTest {
 
     private void assertLogText(String expected) throws Exception {
         String text = findElement(By.vaadin("PID_SLog_row_0")).getText();
-        Assert.assertTrue("Expected '" + expected + "' found '" + text + "'",
+        assertTrue("Expected '" + expected + "' found '" + text + "'",
                 text.equals(expected));
     }
 

@@ -22,6 +22,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.tests.components.abstractlisting.AbstractListingTestUI;
 import com.vaadin.ui.ItemCaptionGenerator;
 import com.vaadin.ui.RadioButtonGroup;
+import com.vaadin.ui.components.grid.DescriptionGenerator;
 
 /**
  * Test UI for RadioButtonGroup component
@@ -46,6 +47,7 @@ public class RadioButtonGroupTestUI
         createSelectionMenu();
         createItemIconGeneratorMenu();
         createItemCaptionGeneratorMenu();
+        createItemDescriptionGeneratorMenu();
     }
 
     protected void createSelectionMenu() {
@@ -82,12 +84,26 @@ public class RadioButtonGroupTestUI
         LinkedHashMap<String, ItemCaptionGenerator<Object>> options = new LinkedHashMap<>();
         options.put("Null Caption Generator", item -> null);
         options.put("Default Caption Generator", item -> item.toString());
-        options.put("Custom Caption Generator",
-                item -> item.toString() + " Caption");
+        options.put("Custom Caption Generator", item -> item + " Caption");
 
         createSelectAction("Item Caption Generator", "Item Caption Generator",
                 options, "None", (radioButtonGroup, captionGenerator, data) -> {
                     radioButtonGroup.setItemCaptionGenerator(captionGenerator);
+                    radioButtonGroup.getDataProvider().refreshAll();
+                }, true);
+    }
+
+    private void createItemDescriptionGeneratorMenu() {
+        LinkedHashMap<String, DescriptionGenerator<Object>> options = new LinkedHashMap<>();
+        options.put("Null Description Generator", item -> null);
+        options.put("Default Description Generator", item -> item.toString());
+        options.put("Custom Description Generator",
+                item -> item + " Description");
+
+        createSelectAction("Item Description Generator",
+                "Item Description Generator", options, "None",
+                (radioButtonGroup, generator, data) -> {
+                    radioButtonGroup.setItemDescriptionGenerator(generator);
                     radioButtonGroup.getDataProvider().refreshAll();
                 }, true);
     }
@@ -103,7 +119,7 @@ public class RadioButtonGroupTestUI
     protected void createListenerMenu() {
         createListenerAction("Selection listener", "Listeners",
                 c -> c.addSelectionListener(
-                        e -> log("Selected: " + e.getSelectedItem())));
+                        event -> log("Selected: " + event.getSelectedItem())));
     }
 
     private int getIndex(Object item) {

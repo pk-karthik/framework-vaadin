@@ -15,16 +15,17 @@
  */
 package com.vaadin.tests.components.datefield;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 import com.vaadin.testbench.By;
-import com.vaadin.testbench.customelements.DateTimeFieldElement;
+import com.vaadin.testbench.elements.DateTimeFieldElement;
 import com.vaadin.tests.tb3.MultiBrowserTest;
 
 /**
@@ -38,7 +39,7 @@ public class TimePopupSelectionTest extends MultiBrowserTest {
         openTestURL();
 
         DateTimeFieldElement field = $(DateTimeFieldElement.class).first();
-        Assert.assertEquals("1/13/17 01:00:00 AM", field.getValue());
+        assertEquals("1/13/17 01:00:00 AM", field.getValue());
 
         field.openPopup();
 
@@ -47,13 +48,13 @@ public class TimePopupSelectionTest extends MultiBrowserTest {
                         .findElements(By.tagName("select"));
 
         new Select(timeSelects.get(0)).selectByValue("09");
-        Assert.assertEquals("1/13/17 09:00:00 AM", field.getValue());
+        assertEquals("1/13/17 09:00:00 AM", field.getValue());
 
         new Select(timeSelects.get(1)).selectByValue("35");
-        Assert.assertEquals("1/13/17 09:35:00 AM", field.getValue());
+        assertEquals("1/13/17 09:35:00 AM", field.getValue());
 
         new Select(timeSelects.get(2)).selectByValue("41");
-        Assert.assertEquals("1/13/17 09:35:41 AM", field.getValue());
+        assertEquals("1/13/17 09:35:41 AM", field.getValue());
 
         closePopup();
 

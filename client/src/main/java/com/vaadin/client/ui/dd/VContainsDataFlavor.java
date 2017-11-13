@@ -18,9 +18,17 @@ package com.vaadin.client.ui.dd;
 import com.vaadin.client.UIDL;
 import com.vaadin.event.dd.acceptcriteria.ContainsDataFlavor;
 import com.vaadin.shared.ui.dd.AcceptCriterion;
+import com.vaadin.ui.dnd.DropTargetExtension;
 
+/**
+ *
+ * @author Vaadin Ltd
+ * @deprecated Replaced in 8.1 with
+ *             {@link DropTargetExtension#setDropCriteria(String)}
+ */
+@Deprecated
 @AcceptCriterion(ContainsDataFlavor.class)
-final public class VContainsDataFlavor extends VAcceptCriterion {
+public final class VContainsDataFlavor extends VAcceptCriterion {
 
     @Override
     protected boolean accept(VDragEvent drag, UIDL configuration) {

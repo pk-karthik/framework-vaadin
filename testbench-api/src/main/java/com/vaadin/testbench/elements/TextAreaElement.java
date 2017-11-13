@@ -22,9 +22,9 @@ import com.vaadin.testbench.elementsbase.ServerClass;
 @ServerClass("com.vaadin.ui.TextArea")
 public class TextAreaElement extends AbstractTextFieldElement {
     /**
-     * Return value of the field element
+     * Return value of the field element.
      *
-     * @since
+     * @since 8.0
      * @return value of the field element
      */
     @Override

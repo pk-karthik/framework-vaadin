@@ -53,10 +53,8 @@ public class NativeSelectConnector
     @Override
     protected void init() {
         super.init();
-        getWidget().getListBox()
-                .setStyleName(NativeSelectState.STYLE_NAME + "-select");
         selectionChangeRegistration = getWidget().getListBox()
-                .addChangeHandler(e -> selectionRpc
+                .addChangeHandler(event -> selectionRpc
                         .select(getWidget().getListBox().getSelectedValue()));
     }
 

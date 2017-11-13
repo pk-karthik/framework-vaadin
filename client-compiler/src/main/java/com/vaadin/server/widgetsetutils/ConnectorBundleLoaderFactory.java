@@ -538,7 +538,7 @@ public class ConnectorBundleLoaderFactory extends Generator {
                             + connector.getName());
 
             // Build map to speed up error checking
-            HashMap<String, Property> stateProperties = new HashMap<>();
+            Map<String, Property> stateProperties = new HashMap<>();
             JClassType stateType = ConnectorBundle
                     .findInheritedMethod(connector, "getState").getReturnType()
                     .isClassOrInterface();
@@ -1156,6 +1156,12 @@ public class ConnectorBundleLoaderFactory extends Generator {
             bundle.processType(subLogger, type);
 
             bundles.add(bundle);
+        }
+
+        Collection<JClassType> none = connectorsByLoadStyle.get(LoadStyle.NONE);
+        for (JClassType type : none) {
+            logger.log(Type.TRACE,
+                    "Ignoring " + type.getName() + " with LoadStyle.NONE");
         }
 
         return bundles;

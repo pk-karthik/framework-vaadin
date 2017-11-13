@@ -34,10 +34,11 @@ import com.vaadin.v7.data.Property;
  *
  * @since 5.3
  *
+ * @deprecated As of 8.0, see component-specific click events.
  */
 @SuppressWarnings("serial")
 @Deprecated
-public class ItemClickEvent extends ClickEvent implements Serializable {
+public class ItemClickEvent extends ClickEvent {
     private Item item;
     private Object itemId;
     private Object propertyId;
@@ -60,7 +61,7 @@ public class ItemClickEvent extends ClickEvent implements Serializable {
     }
 
     /**
-     * Gets a possible identifier in source for clicked Item
+     * Gets a possible identifier in source for clicked Item.
      *
      * @return
      */
@@ -86,9 +87,9 @@ public class ItemClickEvent extends ClickEvent implements Serializable {
         try {
             ITEM_CLICK_METHOD = ItemClickListener.class.getDeclaredMethod(
                     "itemClick", new Class[] { ItemClickEvent.class });
-        } catch (final java.lang.NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             // This should never happen
-            throw new java.lang.RuntimeException();
+            throw new RuntimeException();
         }
     }
 
@@ -128,7 +129,7 @@ public class ItemClickEvent extends ClickEvent implements Serializable {
         /**
          * @deprecated As of 7.0, replaced by
          *             {@link #addItemClickListener(ItemClickListener)}
-         **/
+         */
         @Deprecated
         public void addListener(ItemClickListener listener);
 
@@ -143,7 +144,7 @@ public class ItemClickEvent extends ClickEvent implements Serializable {
         /**
          * @deprecated As of 7.0, replaced by
          *             {@link #removeItemClickListener(ItemClickListener)}
-         **/
+         */
         @Deprecated
         public void removeListener(ItemClickListener listener);
     }

@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import com.vaadin.event.ConnectorEventListener;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.ui.Component;
 import com.vaadin.util.ReflectTools;
@@ -123,7 +124,7 @@ public interface FieldEvents {
      * @since 6.5
      */
     @Deprecated
-    public static abstract class TextChangeEvent extends Component.Event {
+    public abstract static class TextChangeEvent extends Component.Event {
 
         public TextChangeEvent(Component source) {
             super(source);

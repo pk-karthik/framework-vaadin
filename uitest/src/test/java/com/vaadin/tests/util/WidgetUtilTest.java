@@ -15,7 +15,8 @@
  */
 package com.vaadin.tests.util;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -67,15 +68,14 @@ public class WidgetUtilTest extends MultiBrowserTest {
     private void assertExpectedSize(WebElement testComponent, String id,
             String size) {
         WebElement e = testComponent.findElement(By.id(id));
-        Assert.assertEquals(id + ": " + size, e.getText());
+        assertEquals(id + ": " + size, e.getText());
     }
 
     private boolean browserRoundsBorderToInteger(
             DesiredCapabilities capabilities) {
         // Note that this is how the Windows browsers in the test cluster work.
         // On Mac, Firefox works slightly differently (rounds border to 1.5px).
-        return (BrowserUtil.isChrome(capabilities)
-                || BrowserUtil.isPhantomJS(capabilities)
+        return (BrowserUtil.isPhantomJS(capabilities)
                 || BrowserUtil.isFirefox(capabilities));
     }
 

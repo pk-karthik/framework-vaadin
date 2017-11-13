@@ -70,7 +70,7 @@ public class UIState extends AbstractSingleComponentContainerState {
      */
     public LocaleServiceState localeServiceState = new LocaleServiceState();
     /**
-     * Configuration for the push channel
+     * Configuration for the push channel.
      */
     public PushConfigurationState pushConfiguration = new PushConfigurationState();
     /**
@@ -85,6 +85,13 @@ public class UIState extends AbstractSingleComponentContainerState {
         // Default is 1 for legacy reasons
         tabIndex = 1;
     }
+
+    /**
+     * Enable Mobile HTML5 DnD support.
+     *
+     * @since 8.1
+     */
+    public boolean enableMobileHTML5DnD = false;
 
     public static class LoadingIndicatorConfigurationState
             implements Serializable {

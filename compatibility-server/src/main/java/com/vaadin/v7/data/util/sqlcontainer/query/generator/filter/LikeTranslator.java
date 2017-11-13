@@ -15,10 +15,15 @@
  */
 package com.vaadin.v7.data.util.sqlcontainer.query.generator.filter;
 
+import java.util.Locale;
+
 import com.vaadin.v7.data.Container.Filter;
 import com.vaadin.v7.data.util.filter.Like;
 import com.vaadin.v7.data.util.sqlcontainer.query.generator.StatementHelper;
 
+/**
+ * @deprecated As of 8.0, no replacement available.
+ */
 @Deprecated
 public class LikeTranslator implements FilterTranslator {
 
@@ -34,7 +39,7 @@ public class LikeTranslator implements FilterTranslator {
             sh.addParameterValue(like.getValue());
             return QueryBuilder.quote(like.getPropertyId()) + " LIKE ?";
         } else {
-            sh.addParameterValue(like.getValue().toUpperCase());
+            sh.addParameterValue(like.getValue().toUpperCase(Locale.ROOT));
             return "UPPER(" + QueryBuilder.quote(like.getPropertyId())
                     + ") LIKE ?";
         }

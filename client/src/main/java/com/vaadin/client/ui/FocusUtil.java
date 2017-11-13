@@ -15,6 +15,7 @@
  */
 package com.vaadin.client.ui;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -23,14 +24,13 @@ import com.google.gwt.user.client.ui.Widget;
  * {@link Focusable}.
  *
  * @author Vaadin Ltd
- * @version @VERSION@
  * @since 7.0.3
  *
  */
 public class FocusUtil {
 
     /**
-     * Sets the access key property
+     * Sets the access key property.
      *
      * @param focusable
      *            The widget for which we want to set the access key.
@@ -49,7 +49,7 @@ public class FocusUtil {
      *
      * @param focusable
      *            the widget to focus/unfocus
-     * @param focused
+     * @param focus
      *            whether this widget should take focus or release it
      */
     public static void setFocus(Widget focusable, boolean focus) {
@@ -94,5 +94,27 @@ public class FocusUtil {
                 .getElement() != null) : "Can't getTabIndex for a widget without an element";
 
         return focusable.getElement().getTabIndex();
+    }
+
+    public static native Element[] getFocusableChildren(Element parent)
+    /*-{
+        var focusableChildren = parent.querySelectorAll('[type][tabindex]:not([tabindex="-1"]), [role=button][tabindex]:not([tabindex="-1"])');
+        return focusableChildren;
+    }-*/;
+
+    public static void focusOnFirstFocusableElement(Element parent)
+    {
+        Element[] focusableChildren = getFocusableChildren(parent);
+        if (focusableChildren.length > 0) {
+            focusableChildren[0].focus();
+        }
+    }
+
+    public static void focusOnLastFocusableElement(Element parent)
+    {
+        Element[] focusableChildren = getFocusableChildren(parent);
+        if (focusableChildren.length > 0) {
+            focusableChildren[focusableChildren.length - 1].focus();
+        }
     }
 }

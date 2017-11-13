@@ -15,9 +15,12 @@
  */
 package com.vaadin.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.time.LocalDate;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.annotations.PropertyId;
@@ -71,6 +74,11 @@ public class BinderInstanceFieldTest {
 
     public static class BindWrongTypeParameterField extends FormLayout {
         private IntegerTextField firstName;
+    }
+
+    public static class BindOneFieldRequiresConverter extends FormLayout {
+        private TextField firstName;
+        private TextField age;
     }
 
     public static class BindGeneric<T> extends FormLayout {
@@ -142,14 +150,14 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
-        Assert.assertEquals(person.getBirthDate(), form.birthDate.getValue());
+        assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(person.getBirthDate(), form.birthDate.getValue());
 
         form.firstName.setValue("bar");
         form.birthDate.setValue(person.getBirthDate().plusDays(345));
 
-        Assert.assertEquals(form.firstName.getValue(), person.getFirstName());
-        Assert.assertEquals(form.birthDate.getValue(), person.getBirthDate());
+        assertEquals(form.firstName.getValue(), person.getFirstName());
+        assertEquals(form.birthDate.getValue(), person.getBirthDate());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -170,13 +178,13 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(person.getFirstName(), form.firstName.getValue());
 
-        Assert.assertNull(form.noFieldInPerson);
+        assertNull(form.noFieldInPerson);
 
         form.firstName.setValue("bar");
 
-        Assert.assertEquals(form.firstName.getValue(), person.getFirstName());
+        assertEquals(form.firstName.getValue(), person.getFirstName());
     }
 
     @Test
@@ -190,7 +198,7 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertNull(form.firstName);
+        assertNull(form.firstName);
     }
 
     @Test
@@ -204,11 +212,11 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(person.getFirstName(), form.firstName.getValue());
 
         form.firstName.setValue("bar");
 
-        Assert.assertEquals(form.firstName.getValue(), person.getFirstName());
+        assertEquals(form.firstName.getValue(), person.getFirstName());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -264,11 +272,11 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(person.getFirstName(), form.firstName.getValue());
 
         form.firstName.setValue("bar");
 
-        Assert.assertEquals(form.firstName.getValue(), person.getFirstName());
+        assertEquals(form.firstName.getValue(), person.getFirstName());
     }
 
     @Test
@@ -284,7 +292,7 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(name, form.firstName);
+        assertEquals(name, form.firstName);
     }
 
     @Test
@@ -299,16 +307,14 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.nameField.getValue());
-        Assert.assertEquals(person.getBirthDate(),
-                form.birthDateField.getValue());
+        assertEquals(person.getFirstName(), form.nameField.getValue());
+        assertEquals(person.getBirthDate(), form.birthDateField.getValue());
 
         form.nameField.setValue("bar");
         form.birthDateField.setValue(person.getBirthDate().plusDays(345));
 
-        Assert.assertEquals(form.nameField.getValue(), person.getFirstName());
-        Assert.assertEquals(form.birthDateField.getValue(),
-                person.getBirthDate());
+        assertEquals(form.nameField.getValue(), person.getFirstName());
+        assertEquals(form.birthDateField.getValue(), person.getBirthDate());
     }
 
     @Test
@@ -332,18 +338,20 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
-        Assert.assertEquals(person.getBirthDate(), form.birthDate.getValue());
+        assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(person.getBirthDate(), form.birthDate.getValue());
         // the instance is not overridden
-        Assert.assertEquals(name, form.firstName);
+        assertEquals(name, form.firstName);
 
-        form.firstName.setValue("aa");
+        // Test automatic binding
         form.birthDate.setValue(person.getBirthDate().plusDays(345));
+        assertEquals(form.birthDate.getValue(), person.getBirthDate());
 
-        Assert.assertEquals(personName, person.getFirstName());
-        Assert.assertEquals(form.birthDate.getValue(), person.getBirthDate());
+        // Test custom binding
+        form.firstName.setValue("aa");
+        assertEquals(personName, person.getFirstName());
 
-        Assert.assertFalse(binder.validate().isOk());
+        assertFalse(binder.validate().isOk());
     }
 
     @Test
@@ -373,26 +381,46 @@ public class BinderInstanceFieldTest {
 
         binder.setBean(person);
 
-        Assert.assertEquals(person.getFirstName(), form.firstName.getValue());
-        Assert.assertEquals(String.valueOf(person.getAge()),
+        assertEquals(person.getFirstName(), form.firstName.getValue());
+        assertEquals(String.valueOf(person.getAge()),
                 form.noFieldInPerson.getValue());
         // the instances are not overridden
-        Assert.assertEquals(name, form.firstName);
-        Assert.assertEquals(ageField, form.noFieldInPerson);
+        assertEquals(name, form.firstName);
+        assertEquals(ageField, form.noFieldInPerson);
 
-        form.firstName.setValue("aa");
+        // Test correct age
         age += 56;
         form.noFieldInPerson.setValue(String.valueOf(age));
-
-        Assert.assertEquals(personName, person.getFirstName());
-        Assert.assertEquals(form.noFieldInPerson.getValue(),
+        assertEquals(form.noFieldInPerson.getValue(),
                 String.valueOf(person.getAge()));
 
-        Assert.assertFalse(binder.validate().isOk());
+        // Test incorrect name
+        form.firstName.setValue("aa");
+        assertEquals(personName, person.getFirstName());
+
+        assertFalse(binder.validate().isOk());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void bindInstanceFields_explicitelyBoundFieldAndNotBoundField_throwNoBoundFields() {
+    @Test
+    public void bindInstanceFields_preconfiguredFieldNotBoundToPropertyPreserved() {
+        BindOneFieldRequiresConverter form = new BindOneFieldRequiresConverter();
+        form.age = new TextField();
+        form.firstName = new TextField();
+        Binder<Person> binder = new Binder<>(Person.class);
+        binder.forField(form.age)
+                .withConverter(str -> Integer.parseInt(str) / 2,
+                        integer -> Integer.toString(integer * 2))
+                .bind(Person::getAge, Person::setAge);
+        binder.bindInstanceFields(form);
+        Person person = new Person();
+        person.setFirstName("first");
+        person.setAge(45);
+        binder.setBean(person);
+        assertEquals("90", form.age.getValue());
+    }
+
+    @Test
+    public void bindInstanceFields_explicitelyBoundFieldAndNotBoundField() {
         BindOnlyOneField form = new BindOnlyOneField();
         Binder<Person> binder = new Binder<>(Person.class);
 
@@ -401,8 +429,8 @@ public class BinderInstanceFieldTest {
         binder.bindInstanceFields(form);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void bindInstanceFields_tentativelyBoundFieldAndNotBoundField_throwNoBoundFields() {
+    @Test
+    public void bindInstanceFields_tentativelyBoundFieldAndNotBoundField() {
         BindOnlyOneField form = new BindOnlyOneField();
         Binder<Person> binder = new Binder<>(Person.class);
 
@@ -413,8 +441,9 @@ public class BinderInstanceFieldTest {
         // manually
         binder.forMemberField(field);
 
-        // bindInstance expects at least one auto configured field (there is no
-        // such, only incomplete one) and fails
+        // bindInstanceFields will not complain even though it can't bind
+        // anything as there is a binding in progress (an exception will be
+        // thrown later if the binding is not completed)
         binder.bindInstanceFields(form);
     }
 }

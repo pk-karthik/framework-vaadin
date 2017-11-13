@@ -19,6 +19,7 @@ package com.vaadin.client.ui;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.dom.client.DivElement;
@@ -52,7 +53,7 @@ public class VGridLayout extends ComplexPanel {
     public ApplicationConnection client;
 
     /** For internal use only. May be removed or replaced in the future. */
-    public HashMap<Widget, Cell> widgetToCell = new HashMap<>();
+    public Map<Widget, Cell> widgetToCell = new HashMap<>();
 
     /** For internal use only. May be removed or replaced in the future. */
     public int[] columnWidths;
@@ -88,7 +89,23 @@ public class VGridLayout extends ComplexPanel {
 
         setStyleName(CLASSNAME);
         addStyleName(StyleConstants.UI_LAYOUT);
+
+        publishJSHelpers(getElement());
     }
+
+    private native void publishJSHelpers(Element root)
+    /*-{
+        var self = this;
+        root.getRowCount = $entry(function () {
+           return self.@VGridLayout::getRowCount()();
+        });
+        root.getColumnCount = $entry(function () {
+           return self.@VGridLayout::getColumnCount()();
+        });
+        root.getCell = $entry(function (row,column) {
+           return self.@VGridLayout::getCellElement(*)(row, column);
+        });
+    }-*/;
 
     private GridLayoutConnector getConnector() {
         return (GridLayoutConnector) ConnectorMap.get(client)
@@ -96,7 +113,7 @@ public class VGridLayout extends ComplexPanel {
     }
 
     /**
-     * Returns the column widths measured in pixels
+     * Returns the column widths measured in pixels.
      *
      * @return
      */
@@ -105,7 +122,7 @@ public class VGridLayout extends ComplexPanel {
     }
 
     /**
-     * Returns the row heights measured in pixels
+     * Returns the row heights measured in pixels.
      *
      * @return
      */
@@ -114,7 +131,7 @@ public class VGridLayout extends ComplexPanel {
     }
 
     /**
-     * Returns the spacing between the cells horizontally in pixels
+     * Returns the spacing between the cells horizontally in pixels.
      *
      * @return
      */
@@ -123,7 +140,7 @@ public class VGridLayout extends ComplexPanel {
     }
 
     /**
-     * Returns the spacing between the cells vertically in pixels
+     * Returns the spacing between the cells vertically in pixels.
      *
      * @return
      */
@@ -346,9 +363,10 @@ public class VGridLayout extends ComplexPanel {
 
         int y = paddingTop;
         for (int column = 0; column < cells.length; column++) {
-            y = paddingTop + 1 - 1; // Ensure IE10 does not optimize this out by
-                                    // adding something to evaluate on the RHS
-                                    // #11303
+            // Ensure IE10 does not optimize this out by
+            // adding something to evaluate on the RHS
+            // #11303
+            y = paddingTop + 1 - 1;
 
             for (int row = 0; row < cells[column].length; row++) {
                 Cell cell = cells[column][row];
@@ -623,6 +641,10 @@ public class VGridLayout extends ComplexPanel {
 
     Cell[][] cells;
 
+    private int rowCount;
+
+    private int columnCount;
+
     /**
      * Private helper class.
      */
@@ -781,6 +803,20 @@ public class VGridLayout extends ComplexPanel {
         return cells[col][row];
     }
 
+    private Element getCellElement(int row, int col) {
+        if (row < 0 || row >= getRowCount() || col < 0
+                || col >= getColumnCount()) {
+            return null;
+        }
+
+        Cell cell = cells[col][row];
+        if (cell == null || cell.slot == null) {
+            return null;
+        }
+
+        return cell.slot.getWrapperElement();
+    }
+
     /**
      * Creates a new Cell with the given coordinates.
      * <p>
@@ -882,6 +918,8 @@ public class VGridLayout extends ComplexPanel {
     }
 
     public void setSize(int rows, int cols) {
+        rowCount = rows;
+        columnCount = cols;
         if (cells == null) {
             cells = new Cell[cols][rows];
         } else if (cells.length != cols || cells[0].length != rows) {
@@ -895,6 +933,14 @@ public class VGridLayout extends ComplexPanel {
             }
             cells = newCells;
         }
+    }
+
+    private int getRowCount() {
+        return rowCount;
+    }
+
+    private int getColumnCount() {
+        return columnCount;
     }
 
     @Override

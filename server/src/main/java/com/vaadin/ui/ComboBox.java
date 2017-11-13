@@ -29,6 +29,7 @@ import org.jsoup.nodes.Element;
 
 import com.vaadin.data.HasFilterableDataProvider;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.CallbackDataProvider;
 import com.vaadin.data.provider.DataCommunicator;
 import com.vaadin.data.provider.DataKeyMapper;
@@ -56,7 +57,6 @@ import com.vaadin.ui.declarative.DesignAttributeHandler;
 import com.vaadin.ui.declarative.DesignContext;
 import com.vaadin.ui.declarative.DesignFormatter;
 
-import elemental.json.Json;
 import elemental.json.JsonObject;
 
 /**
@@ -69,7 +69,7 @@ import elemental.json.JsonObject;
  */
 @SuppressWarnings("serial")
 public class ComboBox<T> extends AbstractSingleSelect<T>
-        implements HasValue<T>, FieldEvents.BlurNotifier,
+        implements FieldEvents.BlurNotifier,
         FieldEvents.FocusNotifier, HasFilterableDataProvider<T, String> {
 
     /**
@@ -155,7 +155,7 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
         public void createNewItem(String itemValue) {
             // New option entered
             if (getNewItemHandler() != null && itemValue != null
-                    && itemValue.length() > 0) {
+                    && !itemValue.isEmpty()) {
                 getNewItemHandler().accept(itemValue);
             }
         }
@@ -188,8 +188,9 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
     public ComboBox() {
         super(new DataCommunicator<T>() {
             @Override
-            protected DataKeyMapper<T> createKeyMapper() {
-                return new KeyMapper<T>() {
+            protected DataKeyMapper<T> createKeyMapper(
+                    ValueProvider<T, Object> identifierGetter) {
+                return new KeyMapper<T>(identifierGetter) {
                     @Override
                     public void remove(T removeobj) {
                         // never remove keys from ComboBox to support selection
@@ -677,10 +678,9 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
     @Override
     public Registration addValueChangeListener(
             HasValue.ValueChangeListener<T> listener) {
-        return addSelectionListener(event -> {
-            listener.valueChange(new ValueChangeEvent<>(event.getComponent(),
-                    this, event.getOldValue(), event.isUserOriginated()));
-        });
+        return addSelectionListener(event -> listener
+                .valueChange(new ValueChangeEvent<>(event.getComponent(), this,
+                        event.getOldValue(), event.isUserOriginated())));
     }
 
     @Override
@@ -703,7 +703,7 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
 
     private void updateSelectedItemCaption() {
         String selectedCaption = null;
-        T value = getDataCommunicator().getKeyMapper().get(getSelectedKey());
+        T value = keyToItem(getSelectedKey());
         if (value != null) {
             selectedCaption = getItemCaptionGenerator().apply(value);
         }
@@ -712,7 +712,7 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
 
     private void updateSelectedItemIcon() {
         String selectedItemIcon = null;
-        T value = getDataCommunicator().getKeyMapper().get(getSelectedKey());
+        T value = keyToItem(getSelectedKey());
         if (value != null) {
             Resource icon = getItemIconGenerator().apply(value);
             if (icon != null) {
@@ -771,9 +771,8 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
                 ((DeclarativeStyleGenerator) styleGenerator).setStyle(item,
                         child.attr("style"));
             } else {
-                throw new IllegalStateException(String.format(
-                        "Don't know how "
-                                + "to set style using current style generator '%s'",
+                throw new IllegalStateException(String.format("Don't know how "
+                        + "to set style using current style generator '%s'",
                         styleGenerator.getClass().getName()));
             }
         }
@@ -812,7 +811,7 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
      * size callback.
      * <p>
      * This method is a shorthand for making a {@link CallbackDataProvider} that
-     * handles a partial {@link Query} object.
+     * handles a partial {@link com.vaadin.data.provider.Query Query} object.
      *
      * @param fetchItems
      *            a callback for fetching items
@@ -830,29 +829,12 @@ public class ComboBox<T> extends AbstractSingleSelect<T>
                 q -> sizeCallback.applyAsInt(q.getFilter().orElse(""))));
     }
 
-    @Override
-    protected void setSelectedFromClient(String key) {
-        super.setSelectedFromClient(key);
-
-        /*
-         * The client side for combo box always expects a state change for
-         * selectedItemKey after it has sent a selection change. This means that
-         * we must store a value in the diffstate that guarantees that a new
-         * value will be sent, regardless of what the value actually is at the
-         * time when changes are sent.
-         *
-         * Keys are always strings (or null), so using a non-string type will
-         * always trigger a diff mismatch and a resend.
-         */
-        updateDiffstate("selectedItemKey", Json.create(0));
-    }
-
     /**
      * Predicate to check {@link ComboBox} item captions against user typed
      * strings.
      *
-     * @see #setItems(CaptionFilter, Collection)
-     * @see #setItems(CaptionFilter, Object[])
+     * @see ComboBox#setItems(CaptionFilter, Collection)
+     * @see ComboBox#setItems(CaptionFilter, Object[])
      * @since 8.0
      */
     @FunctionalInterface

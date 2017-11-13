@@ -15,33 +15,31 @@
  */
 package com.vaadin.tests.applicationservlet;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.vaadin.server.RequestHandler;
+import com.vaadin.server.ConnectorIdGenerator;
 import com.vaadin.server.ServiceInitEvent;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServiceInitListener;
-import com.vaadin.server.VaadinSession;
 
 public class TestingServiceInitListener implements VaadinServiceInitListener {
 
     private static AtomicInteger initCount = new AtomicInteger();
     private static AtomicInteger requestCount = new AtomicInteger();
+    private static AtomicInteger connectorIdCount = new AtomicInteger();
 
     @Override
     public void serviceInit(ServiceInitEvent event) {
         initCount.incrementAndGet();
 
-        event.addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(VaadinSession session,
-                    VaadinRequest request, VaadinResponse response)
-                    throws IOException {
-                requestCount.incrementAndGet();
-                return false;
-            }
+        event.addRequestHandler((session, request, response) -> {
+            requestCount.incrementAndGet();
+            return false;
+        });
+
+        event.addConnectorIdGenerator(connectorIdGenerationEvent -> {
+            connectorIdCount.incrementAndGet();
+            return ConnectorIdGenerator
+                    .generateDefaultConnectorId(connectorIdGenerationEvent);
         });
     }
 
@@ -51,6 +49,10 @@ public class TestingServiceInitListener implements VaadinServiceInitListener {
 
     public static int getRequestCount() {
         return requestCount.get();
+    }
+
+    public static int getConnectorIdCount() {
+        return connectorIdCount.get();
     }
 
 }

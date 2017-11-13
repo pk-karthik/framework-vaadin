@@ -23,6 +23,9 @@ import java.util.List;
 import com.vaadin.v7.data.Container.Filter;
 import com.vaadin.v7.data.util.sqlcontainer.query.generator.StatementHelper;
 
+/**
+ * @deprecated As of 8.0, no replacement available.
+ */
 @Deprecated
 public class QueryBuilder implements Serializable {
 
@@ -42,7 +45,7 @@ public class QueryBuilder implements Serializable {
         addFilterTranslator(new SimpleStringTranslator());
     }
 
-    public synchronized static void addFilterTranslator(
+    public static synchronized void addFilterTranslator(
             FilterTranslator translator) {
         filterTranslators.add(translator);
     }
@@ -76,7 +79,7 @@ public class QueryBuilder implements Serializable {
      *            the statement helper to update with the value(s) of the filter
      * @return a string representing the filter.
      */
-    public synchronized static String getWhereStringForFilter(Filter filter,
+    public static synchronized String getWhereStringForFilter(Filter filter,
             StatementHelper sh) {
         for (FilterTranslator ft : filterTranslators) {
             if (ft.translatesFilter(filter)) {
@@ -91,7 +94,7 @@ public class QueryBuilder implements Serializable {
         StringBuilder result = new StringBuilder();
         for (Filter f : filters) {
             result.append(getWhereStringForFilter(f, sh));
-            result.append(" ").append(joinString).append(" ");
+            result.append(' ').append(joinString).append(' ');
         }
         // Remove the last instance of joinString
         result.delete(result.length() - joinString.length() - 2,
